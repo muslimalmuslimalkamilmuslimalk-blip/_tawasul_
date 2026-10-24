@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>تواصل - Tawasul</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#000;color:#fff;font-family:system-ui;overflow:hidden}
+.header{position:fixed;top:0;right:0;left:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:12px 15px;background:linear-gradient(to bottom,rgba(0,0,0,.8),transparent)}
+.logo{color:#FFD700;font-weight:900;font-size:24px;letter-spacing:1px}
+.upload{background:#FFD700;color:#000;border:none;padding:8px 16px;border-radius:20px;font-weight:800}
+.feed{height:100vh;overflow-y:scroll;scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch}
+.card{height:100vh;width:100%;position:relative;scroll-snap-align:start;background:#111;overflow:hidden}
+.card video{width:100%;height:100%;object-fit:cover}
+.info{position:absolute;bottom:25px;right:15px;left:80px;z-index:2}
+.info h3{font-size:16px;margin-bottom:6px}
+.info p{font-size:14px;opacity:.9}
+.actions{position:absolute;left:10px;bottom:100px;z-index:2;display:flex;flex-direction:column;gap:18px;align-items:center}
+.btn{width:52px;height:52px;border-radius:50%;border:none;background:rgba(255,255,255,.15);backdrop-filter:blur(10px);font-size:24px;color:#fff}
+.btn.liked{background:#ff2d55}
+.sound{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:40px;opacity:0;pointer-events:none;transition:.3s}
+.mute-btn{position:absolute;top:70px;right:15px;z-index:3;background:rgba(0,0,0,.5);border:none;color:#fff;padding:6px 10px;border-radius:15px}
+</style>
+</head>
+<body>
+<div class="header">
+<div class="logo">تواصل ✨</div>
+<label class="upload">+ رفع<input type="file" id="fileIn" accept="video/*" hidden></label>
+</div>
+
+<div class="feed" id="feed">
+<div class="card">
+<button class="mute-btn" onclick="toggleSound(this)">🔇</button>
+<video src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" loop playsinline></video>
+<div class="sound">🔊</div>
+<div class="actions">
+<button class="btn" onclick="like(this)">❤️<br><span style="font-size:11px">12k</span></button>
+<button class="btn">💬<br><span style="font-size:11px">340</span></button>
+<button class="btn">↗️<br><span style="font-size:11px">مشاركة</span></button>
+</div>
+<div class="info"><h3>@sudani_creative</h3><p>تجربة أول فيديو في تواصل - بث قصير بتمرير عمودي 🔥 #السودان #تواصل</p></div>
+</div>
+</div>
+
+<script>
+const feed=document.getElementById('feed');
+const fileIn=document.getElementById('fileIn');
+
+fileIn.onchange=e=>{
+  const f=e.target.files[0]; if(!f) return;
+  const url=URL.createObjectURL(f);
+  const div=document.createElement('div');
+  div.className='card';
+  div.innerHTML=`<button class="mute-btn" onclick="toggleSound(this)">🔊</button><video src="${url}" loop playsinline autoplay></video><div class="sound">🔊</div><div class="actions"><button class="btn" onclick="like(this)">❤️<br><span style="font-size:11px">0</span></button><button class="btn">💬</button><button class="btn">↗️</button></div><div class="info"><h3>@انت</h3><p>فيديو جديد 🔥</p></div>`;
+  feed.prepend(div); setupObserver();
+}
+
+function like(b){b.classList.toggle('liked')}
+function toggleSound(b){
+  const v=b.parentElement.querySelector('video');
+  v.muted=!v.muted; b.textContent=v.muted?'🔇':'🔊';
+  const s=b.parentElement.querySelector('.sound');
+  s.textContent=v.muted?'🔇':'🔊'; s.style.opacity=1;
+  setTimeout(()=>s.style.opacity=0,600);
+}
+function setupObserver(){
+  const vids=document.querySelectorAll('video');
+  const obs=new IntersectionObserver(ents=>{
+    ents.forEach(en=>{
+      if(en.isIntersecting){en.target.play().catch(()=>{});} else {en.target.pause();}
+    });
+  },{threshold:0.7});
+  vids.forEach(v=>obs.observe(v));
+  document.querySelectorAll('.card').forEach(c=>{
+    c.onclick=e=>{
+      if(e.target.closest('.btn')||e.target.closest('.mute-btn')||e.target.closest('.upload')) return;
+      const v=c.querySelector('video'); 
+      if(v.paused) v.play(); else v.pause();
+    }
+  });
+}
+setupObserver();
+</script>
+</body>
+</html>
