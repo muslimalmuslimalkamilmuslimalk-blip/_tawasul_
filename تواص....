@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تواصل - Tawasul</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#000;color:#fff;font-family:sans-serif;overflow:hidden}
+  .feed{height:100vh;overflow-y:scroll;scroll-snap-type:y mandatory}
+  .video-card{height:100vh;position:relative;scroll-snap-align:start;display:flex;align-items:center;justify-content:center;background:#111}
+  video{height:100%;width:100%;object-fit:cover}
+  .overlay{position:absolute;bottom:0;left:0;right:0;padding:20px;background:linear-gradient(transparent,rgba(0,0,0,.8))}
+  .actions{position:absolute;right:15px;bottom:100px;display:flex;flex-direction:column;gap:20px}
+  .action-btn{background:rgba(255,255,255,.2);border:none;width:50px;height:50px;border-radius:50%;font-size:22px;cursor:pointer}
+  .header{position:fixed;top:0;width:100%;z-index:10;display:flex;justify-content:space-between;padding:15px;background:linear-gradient(rgba(0,0,0,.7),transparent)}
+  .logo{font-weight:900;color:gold;font-size:22px}
+  .upload-btn{background:gold;color:#000;padding:8px 15px;border-radius:20px;border:none;font-weight:bold}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="logo">تواصل ✨</div>
+  <label class="upload-btn">+ رفع فيديو<input type="file" id="fileInput" accept="video/*" hidden></label>
+</div>
+<div class="feed" id="feed">
+  <div class="video-card">
+    <video src="https://www.w3schools.com/html/mov_bbb.mp4" loop muted playsinline></video>
+    <div class="actions">
+      <button class="action-btn" onclick="like(this)">❤️</button>
+      <button class="action-btn">💬</button>
+      <button class="action-btn">↗️</button>
+    </div>
+    <div class="overlay"><h3>@مستخدم_تواصل</h3><p>أول فيديو في تواصل! الهيب هوب السوداني 🔥 #تواصل</p></div>
+  </div>
+</div>
+<script>
+const feed=document.getElementById('feed');
+const fileInput=document.getElementById('fileInput');
+fileInput.onchange=e=>{
+  const file=e.target.files[0];
+  const url=URL.createObjectURL(file);
+  const card=document.createElement('div');
+  card.className='video-card';
+  card.innerHTML=`<video src="${url}" loop muted autoplay playsinline></video><div class="actions"><button class="action-btn" onclick="like(this)">❤️</button><button class="action-btn">💬</button><button class="action-btn">↗️</button></div><div class="overlay"><h3>@انت</h3><p>فيديو جديد من تواصل</p></div>`;
+  feed.prepend(card);
+  observeVideos();
+}
+function like(btn){btn.style.background=btn.style.background==='red'?'rgba(255,255,255,.2)':'red';}
+function observeVideos(){
+  const videos=document.querySelectorAll('video');
+  const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.play()}else{e.target.pause()}})}, {threshold:.7});
+  videos.forEach(v=>io.observe(v));
+}
+observeVideos();
+</script>
+</body>
+</html>
