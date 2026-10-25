@@ -4,83 +4,534 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>تواصل - Tawasul</title>
+
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{background:#000;color:#fff;font-family:system-ui;overflow:hidden}
-.header{position:fixed;top:0;right:0;left:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:12px 15px;background:linear-gradient(to bottom,rgba(0,0,0,.8),transparent)}
-.logo{color:#FFD700;font-weight:900;font-size:24px;letter-spacing:1px}
-.upload{background:#FFD700;color:#000;border:none;padding:8px 16px;border-radius:20px;font-weight:800}
-.feed{height:100vh;overflow-y:scroll;scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch}
-.card{height:100vh;width:100%;position:relative;scroll-snap-align:start;background:#111;overflow:hidden}
-.card video{width:100%;height:100%;object-fit:cover}
-.info{position:absolute;bottom:25px;right:15px;left:80px;z-index:2}
-.info h3{font-size:16px;margin-bottom:6px}
-.info p{font-size:14px;opacity:.9}
-.actions{position:absolute;left:10px;bottom:100px;z-index:2;display:flex;flex-direction:column;gap:18px;align-items:center}
-.btn{width:52px;height:52px;border-radius:50%;border:none;background:rgba(255,255,255,.15);backdrop-filter:blur(10px);font-size:24px;color:#fff}
-.btn.liked{background:#ff2d55}
-.sound{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:40px;opacity:0;pointer-events:none;transition:.3s}
-.mute-btn{position:absolute;top:70px;right:15px;z-index:3;background:rgba(0,0,0,.5);border:none;color:#fff;padding:6px 10px;border-radius:15px}
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #000;
+  color: #fff;
+  font-family: system-ui, sans-serif;
+  overflow: hidden;
+}
+
+.header {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 100;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  background: linear-gradient(rgba(0,0,0,.8), transparent);
+}
+
+.logo {
+  color: #FFD700;
+  font-size: 25px;
+  font-weight: 900;
+}
+
+.upload {
+  background: #FFD700;
+  color: #000;
+  border: none;
+  padding: 9px 16px;
+  border-radius: 22px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.feed {
+  height: 100dvh;
+  overflow-y: auto;
+  scroll-snap-type: y mandatory;
+  scrollbar-width: none;
+}
+
+.feed::-webkit-scrollbar {
+  display: none;
+}
+
+.card {
+  height: 100dvh;
+  width: 100%;
+  position: relative;
+  scroll-snap-align: start;
+  background: #111;
+  overflow: hidden;
+}
+
+.card video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.video-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFD700;
+  font-size: 24px;
+  pointer-events: none;
+}
+
+.info {
+  position: absolute;
+  bottom: 30px;
+  right: 15px;
+  left: 85px;
+  z-index: 3;
+  text-shadow: 0 1px 5px #000;
+}
+
+.info h3 {
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+.info p {
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.actions {
+  position: absolute;
+  left: 10px;
+  bottom: 110px;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  align-items: center;
+}
+
+.btn {
+  width: 53px;
+  min-height: 53px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255,255,255,.18);
+  color: #fff;
+  font-size: 22px;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+}
+
+.btn span {
+  font-size: 11px;
+}
+
+.btn.liked {
+  background: #ff2d55;
+}
+
+.mute-btn {
+  position: absolute;
+  top: 75px;
+  right: 15px;
+  z-index: 5;
+  background: rgba(0,0,0,.55);
+  border: none;
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.sound {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+  font-size: 40px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s;
+}
+
+.comment-panel {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  z-index: 10;
+  background: #171717;
+  padding: 18px;
+  border-radius: 20px 20px 0 0;
+  display: none;
+  max-height: 65%;
+}
+
+.comment-panel.open {
+  display: block;
+}
+
+.comment-title {
+  color: #FFD700;
+  margin-bottom: 12px;
+}
+
+.comment-list {
+  max-height: 220px;
+  overflow-y: auto;
+  margin-bottom: 12px;
+}
+
+.comment {
+  padding: 8px 0;
+  border-bottom: 1px solid #333;
+  overflow-wrap: anywhere;
+}
+
+.comment-form {
+  display: flex;
+  gap: 8px;
+}
+
+.comment-form input {
+  flex: 1;
+  min-width: 0;
+  padding: 12px;
+  border-radius: 20px;
+  border: 1px solid #444;
+  background: #252525;
+  color: white;
+}
+
+.comment-form button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 20px;
+  background: #FFD700;
+  font-weight: bold;
+}
+
+.close-comments {
+  float: left;
+  color: white;
+  background: transparent;
+  border: none;
+  font-size: 22px;
+}
 </style>
 </head>
-<body>
-<div class="header">
-<div class="logo">تواصل ✨</div>
-<label class="upload">+ رفع<input type="file" id="fileIn" accept="video/*" hidden></label>
-</div>
 
-<div class="feed" id="feed">
-<div class="card">
-<button class="mute-btn" onclick="toggleSound(this)">🔇</button>
-<video src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" loop playsinline></video>
-<div class="sound">🔊</div>
-<div class="actions">
-<button class="btn" onclick="like(this)">❤️<br><span style="font-size:11px">12k</span></button>
-<button class="btn">💬<br><span style="font-size:11px">340</span></button>
-<button class="btn">↗️<br><span style="font-size:11px">مشاركة</span></button>
-</div>
-<div class="info"><h3>@sudani_creative</h3><p>تجربة أول فيديو في تواصل - بث قصير بتمرير عمودي 🔥 #السودان #تواصل</p></div>
-</div>
-</div>
+<body>
+
+<header class="header">
+  <div class="logo">تواصل ✨</div>
+
+  <label class="upload">
+    ＋ رفع فيديو
+    <input type="file" id="fileInput" accept="video/*" hidden>
+  </label>
+</header>
+
+<main class="feed" id="feed">
+
+  <section class="card">
+    <video
+      src="https://www.w3schools.com/html/mov_bbb.mp4"
+      loop
+      muted
+      playsinline
+      preload="metadata">
+    </video>
+
+    <button class="mute-btn" onclick="toggleSound(this)">🔇 الصوت</button>
+
+    <div class="sound">🔊</div>
+
+    <div class="actions">
+      <button class="btn" onclick="like(this)">
+        ❤️<br><span>0</span>
+      </button>
+
+      <button class="btn" onclick="openComments(this)">
+        💬<br><span>تعليق</span>
+      </button>
+
+      <button class="btn" onclick="shareVideo(this)">
+        ↗️<br><span>مشاركة</span>
+      </button>
+    </div>
+
+    <div class="info">
+      <h3>@tawasul</h3>
+      <p>أهلاً بك في تواصل! شارك لحظاتك مع العالم 🌟 #تواصل</p>
+    </div>
+
+    <div class="comment-panel">
+      <button class="close-comments" onclick="closeComments(this)">✕</button>
+      <h3 class="comment-title">التعليقات</h3>
+
+      <div class="comment-list"></div>
+
+      <form class="comment-form" onsubmit="addComment(event,this)">
+        <input type="text" placeholder="اكتب تعليقك..." maxlength="500" required>
+        <button type="submit">إرسال</button>
+      </form>
+    </div>
+  </section>
+
+</main>
 
 <script>
-const feed=document.getElementById('feed');
-const fileIn=document.getElementById('fileIn');
+const feed = document.getElementById('feed');
+const fileInput = document.getElementById('fileInput');
 
-fileIn.onchange=e=>{
-  const f=e.target.files[0]; if(!f) return;
-  const url=URL.createObjectURL(f);
-  const div=document.createElement('div');
-  div.className='card';
-  div.innerHTML=`<button class="mute-btn" onclick="toggleSound(this)">🔊</button><video src="${url}" loop playsinline autoplay></video><div class="sound">🔊</div><div class="actions"><button class="btn" onclick="like(this)">❤️<br><span style="font-size:11px">0</span></button><button class="btn">💬</button><button class="btn">↗️</button></div><div class="info"><h3>@انت</h3><p>فيديو جديد 🔥</p></div>`;
-  feed.prepend(div); setupObserver();
+let activeObserver = null;
+const videoUrls = new Set();
+
+function createCard(src, username, description, isLocal = false) {
+  const card = document.createElement('section');
+  card.className = 'card';
+
+  const video = document.createElement('video');
+  video.src = src;
+  video.loop = true;
+  video.muted = true;
+  video.playsInline = true;
+  video.preload = 'metadata';
+
+  if (isLocal) video.autoplay = true;
+
+  const mute = document.createElement('button');
+  mute.className = 'mute-btn';
+  mute.textContent = '🔇 الصوت';
+  mute.onclick = () => toggleSound(mute);
+
+  const sound = document.createElement('div');
+  sound.className = 'sound';
+  sound.textContent = '🔊';
+
+  const actions = document.createElement('div');
+  actions.className = 'actions';
+
+  const likeButton = document.createElement('button');
+  likeButton.className = 'btn';
+  likeButton.innerHTML = '❤️<br><span>0</span>';
+  likeButton.onclick = () => like(likeButton);
+
+  const commentButton = document.createElement('button');
+  commentButton.className = 'btn';
+  commentButton.innerHTML = '💬<br><span>تعليق</span>';
+  commentButton.onclick = () => openComments(commentButton);
+
+  const shareButton = document.createElement('button');
+  shareButton.className = 'btn';
+  shareButton.innerHTML = '↗️<br><span>مشاركة</span>';
+  shareButton.onclick = () => shareVideo(shareButton);
+
+  actions.append(likeButton, commentButton, shareButton);
+
+  const info = document.createElement('div');
+  info.className = 'info';
+
+  const title = document.createElement('h3');
+  title.textContent = username;
+
+  const descriptionText = document.createElement('p');
+  descriptionText.textContent = description;
+
+  info.append(title, descriptionText);
+
+  const panel = document.createElement('div');
+  panel.className = 'comment-panel';
+
+  const close = document.createElement('button');
+  close.className = 'close-comments';
+  close.textContent = '✕';
+  close.onclick = () => closeComments(close);
+
+  const heading = document.createElement('h3');
+  heading.className = 'comment-title';
+  heading.textContent = 'التعليقات';
+
+  const list = document.createElement('div');
+  list.className = 'comment-list';
+
+  const form = document.createElement('form');
+  form.className = 'comment-form';
+  form.innerHTML =
+    '<input type="text" placeholder="اكتب تعليقك..." maxlength="500" required>' +
+    '<button type="submit">إرسال</button>';
+  form.onsubmit = event => addComment(event, form);
+
+  panel.append(close, heading, list, form);
+  card.append(video, mute, sound, actions, info, panel);
+
+  return card;
 }
 
-function like(b){b.classList.toggle('liked')}
-function toggleSound(b){
-  const v=b.parentElement.querySelector('video');
-  v.muted=!v.muted; b.textContent=v.muted?'🔇':'🔊';
-  const s=b.parentElement.querySelector('.sound');
-  s.textContent=v.muted?'🔇':'🔊'; s.style.opacity=1;
-  setTimeout(()=>s.style.opacity=0,600);
+fileInput.addEventListener('change', event => {
+  const file = event.target.files[0];
+
+  if (!file) return;
+
+  if (!file.type.startsWith('video/')) {
+    alert('الرجاء اختيار ملف فيديو صحيح.');
+    fileInput.value = '';
+    return;
+  }
+
+  const url = URL.createObjectURL(file);
+  videoUrls.add(url);
+
+  const card = createCard(
+    url,
+    '@أنت',
+    'فيديو جديد من تواصل ✨',
+    true
+  );
+
+  feed.prepend(card);
+  setupObserver();
+  card.scrollIntoView({ behavior: 'smooth' });
+
+  fileInput.value = '';
+});
+
+function like(button) {
+  const liked = button.classList.toggle('liked');
+  const count = button.querySelector('span');
+  let number = Number(count.textContent) || 0;
+
+  number += liked ? 1 : -1;
+  count.textContent = Math.max(0, number);
 }
-function setupObserver(){
-  const vids=document.querySelectorAll('video');
-  const obs=new IntersectionObserver(ents=>{
-    ents.forEach(en=>{
-      if(en.isIntersecting){en.target.play().catch(()=>{});} else {en.target.pause();}
-    });
-  },{threshold:0.7});
-  vids.forEach(v=>obs.observe(v));
-  document.querySelectorAll('.card').forEach(c=>{
-    c.onclick=e=>{
-      if(e.target.closest('.btn')||e.target.closest('.mute-btn')||e.target.closest('.upload')) return;
-      const v=c.querySelector('video'); 
-      if(v.paused) v.play(); else v.pause();
+
+function toggleSound(button) {
+  const card = button.closest('.card');
+  const video = card.querySelector('video');
+  const sound = card.querySelector('.sound');
+
+  video.muted = !video.muted;
+  button.textContent = video.muted ? '🔇 الصوت' : '🔊 الصوت';
+
+  sound.textContent = video.muted ? '🔇' : '🔊';
+  sound.style.opacity = '1';
+
+  setTimeout(() => {
+    sound.style.opacity = '0';
+  }, 600);
+}
+
+function openComments(button) {
+  const panel = button.closest('.card').querySelector('.comment-panel');
+  panel.classList.add('open');
+}
+
+function closeComments(button) {
+  button.closest('.comment-panel').classList.remove('open');
+}
+
+function addComment(event, form) {
+  event.preventDefault();
+
+  const input = form.querySelector('input');
+  const value = input.value.trim();
+
+  if (!value) return;
+
+  const panel = form.closest('.comment-panel');
+  const list = panel.querySelector('.comment-list');
+
+  const comment = document.createElement('div');
+  comment.className = 'comment';
+
+  const username = document.createElement('strong');
+  username.textContent = '@أنت: ';
+
+  const message = document.createElement('span');
+  message.textContent = value;
+
+  comment.append(username, message);
+  list.appendChild(comment);
+
+  input.value = '';
+  list.scrollTop = list.scrollHeight;
+}
+
+async function shareVideo(button) {
+  const card = button.closest('.card');
+  const video = card.querySelector('video');
+
+  try {
+    if (navigator.share) {
+      await navigator.share({
+        title: 'تواصل - Tawasul',
+        text: card.querySelector('.info p').textContent,
+        url: video.currentSrc.startsWith('blob:')
+          ? location.href
+          : video.currentSrc
+      });
+    } else if (navigator.clipboard) {
+      await navigator.clipboard.writeText(location.href);
+      alert('تم نسخ رابط الصفحة.');
+    } else {
+      alert('المشاركة غير متاحة في هذا المتصفح.');
     }
+  } catch (error) {
+    if (error.name !== 'AbortError') {
+      alert('تعذرت المشاركة. حاول مرة أخرى.');
+    }
+  }
+}
+
+function setupObserver() {
+  if (activeObserver) activeObserver.disconnect();
+
+  activeObserver = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      const video = entry.target;
+
+      if (entry.isIntersecting) {
+        video.play().catch(() => {});
+      } else {
+        video.pause();
+      }
+    });
+  }, { threshold: 0.7 });
+
+  document.querySelectorAll('.card video').forEach(video => {
+    activeObserver.observe(video);
   });
 }
+
+feed.addEventListener('click', event => {
+  if (event.target.closest('button, input, label, form, .comment-panel')) {
+    return;
+  }
+
+  const card = event.target.closest('.card');
+  if (!card) return;
+
+  const video = card.querySelector('video');
+
+  if (video.paused) {
+    video.play().catch(() => {});
+  } else {
+    video.pause();
+  }
+});
+
+window.addEventListener('beforeunload', () => {
+  videoUrls.forEach(url => URL.revokeObjectURL(url));
+});
+
 setupObserver();
 </script>
+
 </body>
-</html>
+  </html>
